@@ -1,9 +1,16 @@
+
 nav {
     background-color: lightseagreen;
     color: #fff;
-    padding: 30px 60px;
+    padding: 25px 100px;
     display: flex;
     justify-content: space-between;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+}
+
+nav h2 {
+    font-size: 35px;
 }
 
 nav ul {
@@ -14,16 +21,28 @@ nav ul {
 
 nav li {
     list-style: none;
+    text-align: center;
 }
 
 nav li a {
     color: #fff;
+    font-size: 18px;
     text-decoration: none;
     font-weight: bold;
-    padding: 5px 8px;
+    padding: 5px 12px;
 }
 
 nav li a:hover {
-    color: lightblue;
+    color: rgb(175, 175, 175);
     text-decoration: none;
+}
+
+.avatar-ctn {
+    background-color: orange;
+    text-align: center;
+}
+  
+.avatar {
+    width: 65%;
+    border-bottom: 1px solid rgba(0,0,0,0.125);
 }
