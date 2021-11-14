@@ -1,50 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="/style.css">
-  <title>Document</title>
 </head>
+
 <body>
-  <nav>
-    <h4>Node MySQL</h4>
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/login">Login</a></li>
-      <li><a href="/register">Register</a></li>
-    </ul>
-  </nav>
+    <nav>
+      <h1>PhotoShare</h1>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+      </ul>
+    </nav>
 
-  <div class="container mt-4">
-    <div class="card">
-      <div class="card-header">
-        Login Form
-      </div>
-      <div class="card-body">
-        <form action="/auth/login" method="POST">
-         
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email">
-          </div>
+    <section class="container-fluid bg">
+        <section class="row justify-content-center">
+            <section class="col-12 col-sm-6 col-md-3">
+            <form class="form-container" action="/auth/login" method="POST">
+            
+              <div class="form-heading">
+                <label for="name">User Login</label>
+              </div>   
 
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" name="password">
-          </div>
-          
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-      </div>
-    </div>
+              <div class="form-group">
+                <label class="lbl2" for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+              </div>
 
-    {{#if message }}
-      <h4 class="alert alert-danger mt-4">{{message}}</h4>
-    {{/if}}
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+              <div class="form-group">
+                <label class="lbl2" for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-block">Log in</button>
+              {{#if message }}
+                  <h4 class="alert alert-danger">{{message}}</h4>
+              {{/if}}
+            </form>
+        </section>
+    </section>
+</section>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
