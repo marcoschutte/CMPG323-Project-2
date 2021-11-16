@@ -1,8 +1,10 @@
+//import external modules
 const mysql = require("mysql");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { promisify } = require('util');
 
+//create connection to db using variables from .env file
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
@@ -10,24 +12,89 @@ const db = mysql.createConnection({
   database: process.env.DATABASE
 });
 
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+exports.register = (req, res) => {
+  
+  //grabs all data that is sent from the form
+  console.log(req.body);
+  //form values
+  const { name, email, password, passwordConfirm } = req.body;
 
-    if( !email || !password ) {
-      return res.status(400).render('login', {
-        message: 'Please provide an email and password'
+  //mysql select query used to select the email from the user table in the database
+  //? is he value we are looking for in the database
+  db.query('SELECT email FROM users WHERE email = ?', [email], async (error, result) => {
+    
+    //used to display information regarding the error if one occurs
+    if(error) {
+      console.log(error);
+    }
+
+    //if result.length is greater than 0 it means that a user with the same email already exists
+    if( result.length > 0 ) {
+      return res.render('register', {
+        message: 'The email is linked to another user. Please select a different email.'
+      })
+    } //if the user entered passwords that do not match 
+    else if( password !== passwordConfirm ) {
+      return res.render('register', {
+        message: 'Passwords do not match! Please re-enter the passwords.'
+      })
+    } //if user did not fill in all the fields
+    else if(name == '' || email == '' || password == '' || passwordConfirm == '') {
+      return res.render('register', {
+        message: 'Please fill in all the required fields!'
       })
     }
 
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => {
-      console.log(results);
-      if( !results || !(await bcrypt.compare(password, results[0].password)) ) {
+    //create variable to store hashed password
+    //bcrypt is used to encrypt the password
+    let hashedPassword = await bcrypt.hash(password, 15);
+
+    //mysql insert query used to insert a new user into the user table within the database
+    //hashed password is stored in the database so that the password remains secure
+    db.query('INSERT INTO users SET ?', {name: name, email: email, password: hashedPassword }, (error, result) => {
+      
+      //used to display information regarding the error if one occurs
+      if(error) {
+        console.log(error);
+      } 
+      else { //data successfully inserted into the user table
+        console.log(result);
+        return res.render('register', {
+          message: 'User has successfully been registered.'
+        });
+      }
+    })
+  });
+}
+
+
+
+
+
+exports.login = async (req, res) => {
+  
+  try {
+    //form values entered by the user
+    const { email, password } = req.body;
+
+    //displays error message when fields are empty
+    if( email == '' || password == '' ) {
+      return res.status(400).render('login', {
+        message: 'Please enter your email and password!'
+      })
+    }
+
+    //mysql select query used to select the email from the user table in the database
+    //? is he value we are looking for in the database
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (error, result) => {
+
+      if( !result[0] || !(await bcrypt.compare(password, result[0].password))) {
         res.status(401).render('login', {
-          message: 'Email or Password is incorrect'
+          message: 'Your email or password is incorrect'
         })
-      } else {
-        const id = results[0].id;
+      } 
+      else {
+        const id = result[0].id;
 
         const token = jwt.sign({ id }, process.env.JWT_SECRET, {
           expiresIn: process.env.JWT_EXPIRES_IN
@@ -42,55 +109,20 @@ exports.login = async (req, res) => {
           httpOnly: true
         }
 
-        res.cookie('jwt', token, cookieOptions );
+        res.cookie('jwt', token, cookieOptions);
         res.status(200).redirect("/");
       }
-
     })
-
   } catch (error) {
     console.log(error);
   }
 }
 
-exports.register = (req, res) => {
-  console.log(req.body);
-
-  const { name, email, password, passwordConfirm } = req.body;
-
-  db.query('SELECT email FROM users WHERE email = ?', [email], async (error, results) => {
-    if(error) {
-      console.log(error);
-    }
-
-    if( results.length > 0 ) {
-      return res.render('register', {
-        message: 'That email is already in use'
-      })
-    } else if( password !== passwordConfirm ) {
-      return res.render('register', {
-        message: 'Passwords do not match'
-      });
-    }
-
-    let hashedPassword = await bcrypt.hash(password, 8);
-    console.log(hashedPassword);
-
-    db.query('INSERT INTO users SET ?', {name: name, email: email, password: hashedPassword }, (error, results) => {
-      if(error) {
-        console.log(error);
-      } else {
-        console.log(results);
-        return res.render('register', {
-          message: 'User registered'
-        });
-      }
-    })
 
 
-  });
 
-}
+
+
 
 exports.isLoggedIn = async (req, res, next) => {
   // console.log(req.cookies);
