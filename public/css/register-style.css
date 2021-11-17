@@ -1,0 +1,87 @@
+.bg {
+    background-image: url('/images/register-background.jpg');
+    width: 100%;
+    height: 100vh;
+    background-size: 100%
+}
+
+nav {
+    background-color: lightseagreen;
+    color: #fff;
+    padding: 35px 60px;
+    display: flex;
+    justify-content: space-between;
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+nav li {
+    list-style: none;
+}
+
+nav li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 25px;
+    padding: 5px 15px;
+}
+
+nav li a:hover {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid white;
+    border-radius: 10px;
+}
+
+.form-container {
+    position: relative;
+    top: 15vh;
+    background: lightseagreen;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 85px 0px #000;
+}
+
+.form-heading {
+    font-size: 30px;
+    color: white;
+}
+
+.lbl {
+    font-size: 20px;
+    color: white;
+}
+
+.form-control {
+    font-size: 20px;
+    background:white;
+    border: 2px solid white;
+    color:black;
+}
+
+.btn {
+    background-color: white;
+    color:lightseagreen;
+    font-size: 20px;
+    font-weight: bold;
+    border: 2px solid white;
+}
+
+.btn:hover {
+    background-color: transparent;
+    border: 2px solid white;
+    font-weight: bold;
+}
+
+.form-control:hover {
+    border: 2px solid white;
+}
+
+.form-control:focus {
+    border: 2px solid white;
+}
