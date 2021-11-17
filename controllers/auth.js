@@ -1,29 +1,33 @@
-//import external modules
+//#region import external modules
 const mysql = require("mysql");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { promisify } = require('util');
+const e = require("express");
+//#endregion
 
-//create connection to db using variables from .env file
+//#region create connection to db
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE
 });
+//#endregion
 
+//#region LOGIN
 exports.register = (req, res) => {
-  
-  //grabs all data that is sent from the form
+ 
+  //user input
   console.log(req.body);
-  //form values
   const { name, email, password, passwordConfirm } = req.body;
 
-  //mysql select query used to select the email from the user table in the database
-  //? is he value we are looking for in the database
-  db.query('SELECT email FROM users WHERE email = ?', [email], async (error, result) => {
+  //#region register SELECT query
+  const registerSelectQuery = 'SELECT email FROM users WHERE email = ?';
+
+  db.query(registerSelectQuery, [email], async (error, result) => {
     
-    //used to display information regarding the error if one occurs
+    //if error occurs a message is displayed
     if(error) {
       console.log(error);
     }
@@ -44,14 +48,16 @@ exports.register = (req, res) => {
         message: 'Please fill in all the required fields!'
       })
     }
+    //#endregion
 
-    //create variable to store hashed password
-    //bcrypt is used to encrypt the password
+  //#region register INSERT query
     let hashedPassword = await bcrypt.hash(password, 15);
 
     //mysql insert query used to insert a new user into the user table within the database
     //hashed password is stored in the database so that the password remains secure
-    db.query('INSERT INTO users SET ?', {name: name, email: email, password: hashedPassword }, (error, result) => {
+    const registerInsertQuery = 'INSERT INTO users SET ?';
+
+    db.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (error, result) => {
       
       //used to display information regarding the error if one occurs
       if(error) {
@@ -63,31 +69,32 @@ exports.register = (req, res) => {
           message: 'User has successfully been registered.'
         });
       }
-    })
+    });
+    //#endregion
   });
 }
+//#endregion
 
-
-
-
-
+//#region REGISTER
 exports.login = async (req, res) => {
   
   try {
-    //form values entered by the user
+    //user input
     const { email, password } = req.body;
 
-    //displays error message when fields are empty
+    //fields are empty
     if( email == '' || password == '' ) {
       return res.status(400).render('login', {
         message: 'Please enter your email and password!'
       })
     }
 
-    //mysql select query used to select the email from the user table in the database
-    //? is he value we are looking for in the database
-    db.query('SELECT * FROM users WHERE email = ?', [email], async (error, result) => {
+    //#region login SELECT query
+    const loginSelectQuery = 'SELECT * FROM users WHERE email = ?';
 
+    db.query(loginSelectQuery, [email], async (error, result) => {
+
+      //compare entered password with hashed password stored in database
       if( !result[0] || !(await bcrypt.compare(password, result[0].password))) {
         res.status(401).render('login', {
           message: 'Your email or password is incorrect'
@@ -112,30 +119,28 @@ exports.login = async (req, res) => {
         res.cookie('jwt', token, cookieOptions);
         res.status(200).redirect("/");
       }
-    })
+      //#endregion
+    }) 
   } catch (error) {
     console.log(error);
   }
 }
 
+//#endregion
 
-
-
-
-
-
+//#region IS LOGGED IN
 exports.isLoggedIn = async (req, res, next) => {
-  // console.log(req.cookies);
+ 
   if( req.cookies.jwt) {
     try {
-      //1) verify the token
+      
       const decoded = await promisify(jwt.verify)(req.cookies.jwt,
       process.env.JWT_SECRET
       );
 
       console.log(decoded);
 
-      //2) Check if the user still exists
+      //#region isLoggedIn SELECT query
       db.query('SELECT * FROM users WHERE id = ?', [decoded.id], (error, result) => {
         console.log(result);
 
@@ -147,8 +152,8 @@ exports.isLoggedIn = async (req, res, next) => {
         console.log("user is")
         console.log(req.user);
         return next();
-
-      });
+      //#endregion
+      }); 
     } catch (error) {
       console.log(error);
       return next();
@@ -157,7 +162,9 @@ exports.isLoggedIn = async (req, res, next) => {
     next();
   }
 }
+//#endregion
 
+//#region LOGOUT
 exports.logout = async (req, res) => {
   res.cookie('jwt', 'logout', {
     expires: new Date(Date.now() + 2*1000),
@@ -166,3 +173,4 @@ exports.logout = async (req, res) => {
 
   res.status(200).redirect('/');
 }
+//#endregion
