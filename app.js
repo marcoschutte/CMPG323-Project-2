@@ -1,4 +1,4 @@
-//import external modules 
+//#region import external modules 
 const express = require("express");
 //path module provides utilities for working with file and directory paths
 const path = require('path'); 
@@ -8,6 +8,7 @@ const mysql = require("mysql");
 const dotenv = require('dotenv');
 //middleware module used to parse cookies attached to the client request object
 const cookieParser = require('cookie-parser');
+//#endregion
 
 //load environment variables from .env file into the process
 dotenv.config({ path: './.env'});
@@ -15,7 +16,9 @@ dotenv.config({ path: './.env'});
 //used to start express application
 const app = express();
 
-//create connection to db using variables from .env file
+const port = process.env.PORT || 3000;
+
+//#region create connection to db
 const db = mysql.createConnection({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
@@ -31,6 +34,7 @@ db.connect( (error) => {
     console.log("Successfully connected to MySQL database!")
   }
 })
+//#endregion
 
 //set view engine which is handlebars
 app.set('view engine', 'hbs');
@@ -52,6 +56,6 @@ app.use('/', require('./routes/pages'));
 app.use('/auth', require('./routes/auth'));
 
 //function used to bind and listen the connections on the specified host and port
-app.listen(3000, () => {
-  console.log("Server started on Port 3000");
+app.listen(port, () => {
+  console.log(`Server started on Port ${port}`);
 })
