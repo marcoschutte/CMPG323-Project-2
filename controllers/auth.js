@@ -23,7 +23,7 @@ exports.register = (req, res) => {
   const { name, email, password, passwordConfirm } = req.body;
 
   //#region register SELECT query
-  const registerSelectQuery = 'SELECT email FROM users WHERE email = ?';
+  const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
 
   db.query(registerSelectQuery, [email], async (error, result) => {
     
@@ -55,7 +55,7 @@ exports.register = (req, res) => {
 
     //mysql insert query used to insert a new user into the user table within the database
     //hashed password is stored in the database so that the password remains secure
-    const registerInsertQuery = 'INSERT INTO users SET ?';
+    const registerInsertQuery = 'INSERT INTO user SET ?';
 
     db.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (error, result) => {
       
@@ -90,7 +90,7 @@ exports.login = async (req, res) => {
     }
 
     //#region login SELECT query
-    const loginSelectQuery = 'SELECT * FROM users WHERE email = ?';
+    const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
 
     db.query(loginSelectQuery, [email], async (error, result) => {
 
@@ -141,7 +141,7 @@ exports.isLoggedIn = async (req, res, next) => {
       console.log(decoded);
 
       //#region isLoggedIn SELECT query
-      db.query('SELECT * FROM users WHERE id = ?', [decoded.id], (error, result) => {
+      db.query('SELECT * FROM user WHERE id = ?', [decoded.id], (error, result) => {
         console.log(result);
 
         if(!result) {
