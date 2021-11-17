@@ -1,10 +1,10 @@
-//import external modules
+//#region import external modules
 const express = require('express');
 const authController = require('../controllers/auth');
+//#endregion
 
-//used to create router handlers
+//#region GET requests
 const router = express.Router();
-
 
 router.get('/', authController.isLoggedIn, (req, res) => {
   res.render('index', {
@@ -37,3 +37,4 @@ router.get('/profile', authController.isLoggedIn, (req, res) => {
 });
 
 module.exports = router;
+//#endregion 
