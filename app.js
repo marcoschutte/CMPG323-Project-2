@@ -8,6 +8,8 @@ const mysql = require("mysql");
 const dotenv = require('dotenv');
 //middleware module used to parse cookies attached to the client request object
 const cookieParser = require('cookie-parser');
+const exphbs = require('express-handlebars');
+const fileUpload = require('express-fileupload');
 //#endregion
 
 //load environment variables from .env file into the process
@@ -37,6 +39,7 @@ db.connect( (error) => {
 //#endregion
 
 //set view engine which is handlebars
+app.engine('hbs', require( 'exphbs'));
 app.set('view engine', 'hbs');
 
 //public directory is where files are stores for the frontend e.g. css & images
@@ -51,11 +54,24 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+// app.use(fileupload({
+
+// }));
+
 //redirects to where routes are stored
-app.use('/', require('./routes/pages'));
-app.use('/auth', require('./routes/auth'));
+app.use('/', require('./routes/getRoutes'));
+app.use('/auth', require('./routes/postRoutes'));
 
 //function used to bind and listen the connections on the specified host and port
 app.listen(port, () => {
   console.log(`Server started on Port ${port}`);
 })
+
+const pool = mysql.createPool({
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE
+});
+
+pool.query('select 1 + 1', (err, rows) => { /* */ });
