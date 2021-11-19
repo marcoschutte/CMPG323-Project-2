@@ -71,12 +71,14 @@ nav li a:hover {
     font-weight: bold;
     border: 2px solid lightseagreen;
     border-radius: 10px;
+    
 }
 
 .btn:hover {
     background-color: lightseagreen;
     border: 2px solid lightseagreen;
     font-weight: bold;
+    border: 2px solid white;
     border-radius: 10px;
 }
 
@@ -89,5 +91,29 @@ nav li a:hover {
 }
 
 .card-header {
+    border: 2px solid lightseagreen;
+    font-size: 22px;
+    background-color: lightseagreen;
+    color: #fff;
 
+}
+
+.card-body {
+    background-color: white;
+    color: lightseagreen;
+    padding-top: 12px;
+    padding-bottom:10px;
+    color: lightseagreen;
+    font-style: italic;
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card {
+    border-bottom: 10px solid lightseagreen;
+    border-left: lightseagreen;
+    border-right: lightseagreen;
+    border-top: lightseagreen;
 }
