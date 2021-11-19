@@ -164,6 +164,31 @@ exports.isLoggedIn = async (req, res, next) => {
 }
 //#endregion
 
+
+
+
+
+
+exports.view = async (req, res) => {
+  res.redirect('/view');
+}
+
+exports.upload = async (req, res) => {
+  res.redirect('/upload');
+}
+
+exports.download = async (req, res) => {
+  res.redirect('/download');
+}
+
+exports.delete = async (req, res) => {
+  res.redirect('/delete');
+}
+
+exports.shared = async (req, res) => {
+  res.redirect('/shared');
+}
+
 //#region LOGOUT
 exports.logout = async (req, res) => {
   res.cookie('jwt', 'logout', {
