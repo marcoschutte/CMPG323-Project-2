@@ -17,20 +17,39 @@
     </ul>
   </nav>
 
-  
-        <div class="card text-center">
-          <div class="card-header">{{user.email}}</div>
-          <div class="card-body">
-            <h5 class="card-title">Hi {{user.name}} welcome back to your PhotoShare profile!</h5>
-            <p class="card-text"></p>
-            <a href="#" class="btn btn-primary">Upload Photos</a>
-            <a href="#" class="btn btn-primary">Download Photos</a>
-            <a href="#" class="btn btn-primary">Delete Photos</a>
-          </div>
-          <div class="card-footer text-muted">PhotoShare</div>
-        </div>
-    
+  <section class="container-fluid bg">
+        <section class="row justify-content-center">
+            <section class="col-12 col-sm-6 col-md-3">
+              <form class="form-container">
+            
+              <div class="card text-center">
+                <h5 class="card-header">{{user.email}}</h5>
+                <div class="card-body">
+                  <h5 class="card-title">"Hi {{user.name}} welcome back to your PhotoShare profile!"</h5>
+                </div>
+              </div>
 
+              
+              <a href="upload">
+                  <input type="button" value="Upload Photos" class="btn btn-primary btn-block"/>
+              </a>
+              <a href="view">
+                  <input type="button" value="View Photos" class="btn btn-primary btn-block"/>
+              </a>
+              <a href="download">
+                  <input type="button" value="Download Photos" class="btn btn-primary btn-block"/>
+              </a>
+              <a href="delete">
+                  <input type="button" value="Delete Photos" class="btn btn-primary btn-block"/>
+              </a>
+              <a href="shared">
+                  <input type="button" value="Photos Shared With Me" class="btn btn-primary btn-block"/>
+              </a>
+
+            </form>
+        </section>
+    </section>
+</section>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 </body>
 </html>
