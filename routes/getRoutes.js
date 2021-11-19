@@ -36,5 +36,75 @@ router.get('/profile', authController.isLoggedIn, (req, res) => {
   } 
 });
 
+
+
+
+
+router.get('/upload', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('upload', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+router.get('/view', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('view', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+router.get('/download', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('download', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+router.get('/delete', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('delete', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+router.get('/shared', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('shared', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+
 module.exports = router;
 //#endregion 
