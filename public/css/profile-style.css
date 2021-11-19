@@ -47,23 +47,6 @@ nav li a:hover {
     box-shadow: 0px 0px 85px 0px #000;
 }
 
-/* .form-heading {
-    font-size: 30px;
-    color: white;
-} */
-
-/* .lbl {
-    font-size: 20px;
-    color: white;
-} */
-
-/* .form-control {
-    font-size: 20px;
-    background:white;
-    border: 2px solid white;
-    color:black;
-} */
-
 .btn {
     background-color: white;
     color:lightseagreen;
@@ -71,7 +54,6 @@ nav li a:hover {
     font-weight: bold;
     border: 2px solid lightseagreen;
     border-radius: 10px;
-    
 }
 
 .btn:hover {
@@ -95,15 +77,13 @@ nav li a:hover {
     font-size: 22px;
     background-color: lightseagreen;
     color: #fff;
-
 }
 
 .card-body {
     background-color: white;
-    color: lightseagreen;
+    color: rgba(0, 0, 0, 0.700);
     padding-top: 12px;
     padding-bottom:10px;
-    color: lightseagreen;
     font-style: italic;
 }
 
@@ -116,4 +96,12 @@ nav li a:hover {
     border-left: lightseagreen;
     border-right: lightseagreen;
     border-top: lightseagreen;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a {
+    padding: 20px;
 }
