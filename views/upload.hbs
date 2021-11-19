@@ -20,12 +20,16 @@
   <section class="container-fluid bg">
         <section class="row justify-content-center">
             <section class="col-12 col-sm-6 col-md-3">
-              <form class="form-container">
-            
               
-              
-              
+              <form class="form-container" action="/auth/upload" method="POST" enctype="multipart/form-data">
+              <h2>Upload Photos</h2>
+              <input type="file" name="sampleFile" accept="image/*"/>
+              <input type="submit" class="btn btn-primary btn-block">
             </form>
+
+            <div class="card">
+              <img class="card-image" src="" alt="">
+            </div>
         </section>
     </section>
 </section>
