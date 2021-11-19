@@ -164,30 +164,47 @@ exports.isLoggedIn = async (req, res, next) => {
 }
 //#endregion
 
+exports.upload = async (req, res) => {
+  
+  let sampleFile;
+  let uploadPath;
 
+  if(!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
 
+  sampleFile = req.files.sampleFile;
+  uploadPath = __dirname + '/../uploads/' + sampleFile.name;
+  
+  console.log(sampleFile);
 
+  sampleFile.mv(uploadPath, function (err) {
+    if(err) return res.status(500).send(err);
 
+  res.send('File uploaded!');
 
-exports.view = async (req, res) => {
-  res.redirect('/view');
+});
+
 }
 
-exports.upload = async (req, res) => {
-  res.redirect('/upload');
+exports.view = async (req, res) => {
+  res.render('/view');
 }
 
 exports.download = async (req, res) => {
-  res.redirect('/download');
+  res.render('/download');
 }
 
 exports.delete = async (req, res) => {
-  res.redirect('/delete');
+  res.render('/delete');
 }
 
 exports.shared = async (req, res) => {
-  res.redirect('/shared');
+  res.render('/shared');
 }
+
+
+
 
 //#region LOGOUT
 exports.logout = async (req, res) => {
