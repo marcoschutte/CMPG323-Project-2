@@ -1,9 +1,7 @@
-//#region import external modules
 const express = require('express');
+const mysql = require("mysql");
 const authController = require('../controllers/auth');
-//#endregion
 
-//#region GET requests
 const router = express.Router();
 
 router.get('/', authController.isLoggedIn, (req, res) => {
@@ -12,17 +10,14 @@ router.get('/', authController.isLoggedIn, (req, res) => {
   });
 });
 
-//requests data from user registration page & renders user registration page
 router.get('/register', (req, res) => {
   res.render('register');
 });
 
-//requests data from login page & render user login page 
 router.get('/login', (req, res) => {
   res.render('login');
 });
 
-//render user profile page 
 router.get('/profile', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
   
@@ -40,6 +35,10 @@ router.get('/profile', authController.isLoggedIn, (req, res) => {
 
 
 
+
+
+
+
 router.get('/upload', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
   
@@ -51,7 +50,13 @@ router.get('/upload', authController.isLoggedIn, (req, res) => {
   else {
     res.redirect('/login');
   } 
+
 });
+
+
+
+
+
 
 router.get('/view', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
@@ -107,4 +112,3 @@ router.get('/shared', authController.isLoggedIn, (req, res) => {
 
 
 module.exports = router;
-//#endregion 
