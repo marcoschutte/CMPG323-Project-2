@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/upload-style.css">
-  <title>Document</title>
+  <title>PhotoShare Upload Photos</title>
 </head>
 <body>
   <nav>
@@ -25,10 +25,11 @@
               <h2>Upload Photos</h2>
               <input type="file" name="sampleFile" accept="image/*"/>
               <input type="submit" class="btn btn-primary btn-block">
+              {{#if message }}
+                  <h4 class="alert alert-info">{{message}}</h4>
+              {{/if}}
             </form>
 
-            <div class="card">
-              <img class="card-image" src="" alt="">
             </div>
         </section>
     </section>
