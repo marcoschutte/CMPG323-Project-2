@@ -1,8 +1,7 @@
-const { promisify } = require('util');
-const e = require("express");
 const mysql = require("mysql");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { promisify } = require('util');
 
 const mysql_DB = mysql.createConnection({
   host: process.env.DATABASE_HOST,
@@ -12,7 +11,7 @@ const mysql_DB = mysql.createConnection({
 });
 
 const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
-const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
+
 const registerInsertQuery = 'INSERT INTO user SET ?';
 
 exports.register = (req, res) => {
@@ -77,34 +76,34 @@ exports.login = async (req, res) => {
         message: 'Please enter your email and password!'
       })
     }
-
+    const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
     mysql_DB.query(loginSelectQuery, [email], async (err, result) => {
 
-      if( !(await bcrypt.compare(password, result[0].password)) || !result[0] ) {
+      if( !result[0] || !(await bcrypt.compare(password, result[0].password))) {
         
         res.status(401).render('login', {
           message: 'Your email or password is incorrect'
         })
       } 
       else {
-        const id = result[0].id;
+        const user_id = result[0].user_id;
 
-        const jsonwebtoken = jwt.sign({ id }, process.env.JWT_SECRET, {
-          expiresIn: process.env.TOKEN_EXPIRES_IN
+        const token = jwt.sign({ user_id }, process.env.JWT_SECRET, {
+          expiresIn: process.env.JWT_EXPIRES_IN
         });
 
-        console.log('JsonWebToken:' + jsonwebtoken);
+        console.log('token:' + token);
 
         const cookieOptions = {
           
           expires: new Date(
-            Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+            Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
           ),
           httpOnly: true
         }
 
-        res.cookie('jwt', jsonwebtoken, cookieOptions);
-        res.status(200).redirect("/");
+        res.cookie('jwt', token, cookieOptions);
+        res.status(200).redirect("/profile");
       }
  
     }) 
@@ -124,7 +123,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
       console.log(decoded);
 
-      mysql_DB.query('SELECT * FROM user WHERE id = ?', [decoded.id], (err, result) => {
+      mysql_DB.query('SELECT * FROM user WHERE user_id = ?', [decoded.user_id], (err, result) => {
         console.log(result);
 
         if(!result) {
