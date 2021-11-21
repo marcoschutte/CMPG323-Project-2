@@ -1,101 +1,87 @@
-//#region import external modules
+const { promisify } = require('util');
+const e = require("express");
 const mysql = require("mysql");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { promisify } = require('util');
-const e = require("express");
-//#endregion
 
-//#region create connection to db
-const db = mysql.createConnection({
+const mysql_DB = mysql.createConnection({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE
 });
-//#endregion
 
-//#region LOGIN
+const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
+const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
+const registerInsertQuery = 'INSERT INTO user SET ?';
+
 exports.register = (req, res) => {
  
-  //user input
   console.log(req.body);
+  
   const { name, email, password, passwordConfirm } = req.body;
 
-  //#region register SELECT query
-  const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
-
-  db.query(registerSelectQuery, [email], async (error, result) => {
+  mysql_DB.query(registerSelectQuery, [email], async (err, result) => {
     
-    //if error occurs a message is displayed
-    if(error) {
-      console.log(error);
+    if(err) {
+      console.log(err);
     }
 
-    //if result.length is greater than 0 it means that a user with the same email already exists
     if( result.length > 0 ) {
+      
       return res.render('register', {
         message: 'The email is linked to another user. Please select a different email.'
       })
-    } //if the user entered passwords that do not match 
+    } 
     else if( password !== passwordConfirm ) {
+      
       return res.render('register', {
         message: 'Passwords do not match! Please re-enter the passwords.'
       })
-    } //if user did not fill in all the fields
+    } 
     else if(name == '' || email == '' || password == '' || passwordConfirm == '') {
+      
       return res.render('register', {
         message: 'Please fill in all the required fields!'
       })
     }
-    //#endregion
 
-  //#region register INSERT query
     let hashedPassword = await bcrypt.hash(password, 15);
 
-    //mysql insert query used to insert a new user into the user table within the database
-    //hashed password is stored in the database so that the password remains secure
-    const registerInsertQuery = 'INSERT INTO user SET ?';
-
-    db.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (error, result) => {
+    mysql_DB.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (err, result) => {
       
-      //used to display information regarding the error if one occurs
-      if(error) {
-        console.log(error);
+      if(err) {
+        console.log(err);
       } 
-      else { //data successfully inserted into the user table
+      else { 
         console.log(result);
-        return res.render('register', {
-          message: 'User has successfully been registered.'
+        
+        return res.render('login', {
+          message: 'User has successfully been registered. Please login to continue.'
         });
       }
     });
-    //#endregion
   });
 }
-//#endregion
 
-//#region REGISTER
+
 exports.login = async (req, res) => {
   
   try {
-    //user input
-    const { email, password } = req.body;
 
-    //fields are empty
+    const { email, password } = req.body;
+    
     if( email == '' || password == '' ) {
+      
       return res.status(400).render('login', {
         message: 'Please enter your email and password!'
       })
     }
 
-    //#region login SELECT query
-    const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
+    mysql_DB.query(loginSelectQuery, [email], async (err, result) => {
 
-    db.query(loginSelectQuery, [email], async (error, result) => {
-
-      //compare entered password with hashed password stored in database
-      if( !result[0] || !(await bcrypt.compare(password, result[0].password))) {
+      if( !(await bcrypt.compare(password, result[0].password)) || !result[0] ) {
+        
         res.status(401).render('login', {
           message: 'Your email or password is incorrect'
         })
@@ -103,32 +89,30 @@ exports.login = async (req, res) => {
       else {
         const id = result[0].id;
 
-        const token = jwt.sign({ id }, process.env.JWT_SECRET, {
-          expiresIn: process.env.JWT_EXPIRES_IN
+        const jsonwebtoken = jwt.sign({ id }, process.env.JWT_SECRET, {
+          expiresIn: process.env.TOKEN_EXPIRES_IN
         });
 
-        console.log("The token is: " + token);
+        console.log('JsonWebToken:' + jsonwebtoken);
 
         const cookieOptions = {
+          
           expires: new Date(
-            Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+            Date.now() + process.env.COOKIE_EXPIRES * 24 * 60 * 60 * 1000
           ),
           httpOnly: true
         }
 
-        res.cookie('jwt', token, cookieOptions);
+        res.cookie('jwt', jsonwebtoken, cookieOptions);
         res.status(200).redirect("/");
       }
-      //#endregion
+ 
     }) 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
   }
 }
 
-//#endregion
-
-//#region IS LOGGED IN
 exports.isLoggedIn = async (req, res, next) => {
  
   if( req.cookies.jwt) {
@@ -140,8 +124,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
       console.log(decoded);
 
-      //#region isLoggedIn SELECT query
-      db.query('SELECT * FROM user WHERE id = ?', [decoded.id], (error, result) => {
+      mysql_DB.query('SELECT * FROM user WHERE id = ?', [decoded.id], (err, result) => {
         console.log(result);
 
         if(!result) {
@@ -152,17 +135,17 @@ exports.isLoggedIn = async (req, res, next) => {
         console.log("user is")
         console.log(req.user);
         return next();
-      //#endregion
+
       }); 
-    } catch (error) {
-      console.log(error);
+    } 
+    catch (err) {
+      console.log(err);
       return next();
     }
   } else {
     next();
   }
 }
-//#endregion
 
 exports.upload = async (req, res) => {
   
@@ -170,7 +153,10 @@ exports.upload = async (req, res) => {
   let uploadPath;
 
   if(!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
+
+    return res.status(400).render('upload', {
+      message: 'Upload failed! Please try again.'
+    });
   }
 
   sampleFile = req.files.sampleFile;
@@ -181,7 +167,9 @@ exports.upload = async (req, res) => {
   sampleFile.mv(uploadPath, function (err) {
     if(err) return res.status(500).send(err);
 
-  res.send('File uploaded!');
+    return res.render('upload', {
+      message: 'Your image was successfully uploaded.'
+    });
 
 });
 
@@ -203,10 +191,6 @@ exports.shared = async (req, res) => {
   res.render('/shared');
 }
 
-
-
-
-//#region LOGOUT
 exports.logout = async (req, res) => {
   res.cookie('jwt', 'logout', {
     expires: new Date(Date.now() + 2*1000),
@@ -215,4 +199,3 @@ exports.logout = async (req, res) => {
 
   res.status(200).redirect('/');
 }
-//#endregion
