@@ -44,13 +44,17 @@ h2 {
     color: #fff;
 }
 
+.lbl {
+    font-size: 20px;
+    color: white;
+}
 
-
-
-
-
-
-
+.form-control {
+    font-size: 20px;
+    background:white;
+    border: 2px solid white;
+    color:black;
+}
 
 .form-container {
     position: relative;
