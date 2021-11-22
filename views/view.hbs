@@ -20,11 +20,19 @@
   <section class="container-fluid bg">
         <section class="row justify-content-center">
             <section class="col-12 col-sm-6 col-md-3">
-              <form class="form-container">
-            
-              
-              
-              
+
+              <form class="form-container" action="/auth/view" method="POST" enctype="multipart/form-data">
+              <h2>View Photos</h2>
+                    
+                    <div class="form-group">
+                        <label class="lbl" for="image">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" placeholder="Enter location">
+                    </div>   
+             
+              <input type="submit" class="btn btn-primary btn-block">
+              {{#if message }}
+                  <h4 class="alert alert-info">{{message}}</h4>
+              {{/if}}
             </form>
         </section>
     </section>
