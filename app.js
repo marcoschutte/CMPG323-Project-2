@@ -11,23 +11,18 @@ dotenv.config({ path: './.env'});
 const app = express();
 const port = process.env.PORT || 3000;
 
-// //#region create connection to db
-// const db = mysql.createConnection({
-//   host: process.env.DATABASE_HOST,
-//   user: process.env.DATABASE_USER,
-//   password: process.env.DATABASE_PASSWORD,
-//   database: process.env.DATABASE
-// });
+const pool = mysql.createPool({
+  connectionLimit   : 10,
+  host              : process.env.DATABASE_HOST,
+  user              : process.env.DATABASE_USER,
+  password          : process.env.DATABASE_PASSWORD,
+  database          : process.env.DATABASE
+});
 
-// //connect to database
-// db.connect( (error) => {
-//   if(error) {
-//     console.log(error)
-//   } else {
-//     console.log("Successfully connected to MySQL database!")
-//   }
-// })
-
+pool.getConnection((err, connection) => {
+  if(err) throw err;
+  console.log('Successfully connected to MySQL database');
+})
 
 app.use(fileUpload());
 
@@ -62,18 +57,7 @@ app.listen(port, () => {
   console.log(`Server started on Port ${port}`);
 })
 
-const pool = mysql.createPool({
-  connectionLimit   : 10,
-  host              : process.env.DATABASE_HOST,
-  user              : process.env.DATABASE_USER,
-  password          : process.env.DATABASE_PASSWORD,
-  database          : process.env.DATABASE
-});
 
-pool.getConnection((err, connection) => {
-  if(err) throw err;
-  console.log('Successfully connected to MySQL database');
-})
 
 pool.query('select 1 + 1', (err, rows) => { /* */ });
 
