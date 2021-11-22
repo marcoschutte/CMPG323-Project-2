@@ -2,17 +2,22 @@ const mysql = require("mysql");
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { promisify } = require('util');
+const fs = require('fs');
 
-const mysql_DB = mysql.createConnection({
-  host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE
+// const pool = mysql.createConnection({
+//   host: process.env.DATABASE_HOST,
+//   user: process.env.DATABASE_USER,
+//   password: process.env.DATABASE_PASSWORD,
+//   database: process.env.DATABASE
+// });
+
+const pool = mysql.createPool({
+  connectionLimit   : 10,
+  host              : process.env.DATABASE_HOST,
+  user              : process.env.DATABASE_USER,
+  password          : process.env.DATABASE_PASSWORD,
+  database          : process.env.DATABASE
 });
-
-const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
-
-const registerInsertQuery = 'INSERT INTO user SET ?';
 
 exports.register = (req, res) => {
  
@@ -20,7 +25,9 @@ exports.register = (req, res) => {
   
   const { name, email, password, passwordConfirm } = req.body;
 
-  mysql_DB.query(registerSelectQuery, [email], async (err, result) => {
+  const registerSelectQuery = 'SELECT email FROM user WHERE email = ?';
+
+  pool.query(registerSelectQuery, [email], async (err, result) => {
     
     if(err) {
       console.log(err);
@@ -47,7 +54,9 @@ exports.register = (req, res) => {
 
     let hashedPassword = await bcrypt.hash(password, 15);
 
-    mysql_DB.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (err, result) => {
+    const registerInsertQuery = 'INSERT INTO user SET ?';
+
+    pool.query(registerInsertQuery, {name: name, email: email, password: hashedPassword }, (err, result) => {
       
       if(err) {
         console.log(err);
@@ -77,7 +86,7 @@ exports.login = async (req, res) => {
       })
     }
     const loginSelectQuery = 'SELECT * FROM user WHERE email = ?';
-    mysql_DB.query(loginSelectQuery, [email], async (err, result) => {
+    pool.query(loginSelectQuery, [email], async (err, result) => {
 
       if( !result[0] || !(await bcrypt.compare(password, result[0].password))) {
         
@@ -123,7 +132,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
       console.log(decoded);
 
-      mysql_DB.query('SELECT * FROM user WHERE user_id = ?', [decoded.user_id], (err, result) => {
+      pool.query('SELECT * FROM user WHERE user_id = ?', [decoded.user_id], (err, result) => {
         console.log(result);
 
         if(!result) {
@@ -148,31 +157,65 @@ exports.isLoggedIn = async (req, res, next) => {
 
 exports.upload = async (req, res) => {
   
-  let sampleFile;
-  let uploadPath;
+  let imageFile;
+  let uploadFolderPath;
+
+  const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+  const user_id = decoded.user_id;
+
+  console.log(user_id);
 
   if(!req.files || Object.keys(req.files).length === 0) {
 
     return res.status(400).render('upload', {
-      message: 'Upload failed! Please try again.'
+      message: 'Upload failed! Make sure that all fields are filled in.'
     });
   }
 
-  sampleFile = req.files.sampleFile;
-  uploadPath = __dirname + '/../uploads/' + sampleFile.name;
+  imageFile = req.files.imageFile;
+  uploadFolderPath = __dirname + '/../uploads/' + imageFile.name;
   
-  console.log(sampleFile);
+  console.log(imageFile);
 
-  sampleFile.mv(uploadPath, function (err) {
-    if(err) return res.status(500).send(err);
+  imageFile.mv(uploadFolderPath, function (err) {
+    if(err) {
+      return res.status(500).send(err);
+    }
+    else {
+      console.log(req.body);
+      
+      const { location, tag, captured_by, captured_date } = req.body;
 
-    return res.render('upload', {
-      message: 'Your image was successfully uploaded.'
+      const contents = fs.readFileSync(uploadFolderPath, {encoding: 'base64'});
+
+    const uploadInsertQuery = 'INSERT INTO photo SET ?';
+
+    pool.query(uploadInsertQuery, { user_id: user_id, photo_name: imageFile.name, photo_path: uploadFolderPath, photo: contents, location: location, captured_date: captured_date, captured_by: captured_by, tag: tag}, (err, result) => {
+    
+      if(err) {
+        console.log(err);
+      } 
+      else { 
+        console.log(result);
+        
+        return res.render('upload', {
+          message: 'Your image was successfully uploaded.'
+        });
+      }
     });
-
-});
-
+  }});
 }
+
+
+
+
+
+
+      
+      
+      
+      
+
 
 exports.view = async (req, res) => {
   res.render('/view');
@@ -198,3 +241,6 @@ exports.logout = async (req, res) => {
 
   res.status(200).redirect('/');
 }
+
+
+
