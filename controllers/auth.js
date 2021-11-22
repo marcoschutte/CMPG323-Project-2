@@ -4,12 +4,6 @@ const bcrypt = require('bcryptjs');
 const { promisify } = require('util');
 const fs = require('fs');
 
-// const pool = mysql.createConnection({
-//   host: process.env.DATABASE_HOST,
-//   user: process.env.DATABASE_USER,
-//   password: process.env.DATABASE_PASSWORD,
-//   database: process.env.DATABASE
-// });
 
 const pool = mysql.createPool({
   connectionLimit   : 10,
@@ -18,6 +12,7 @@ const pool = mysql.createPool({
   password          : process.env.DATABASE_PASSWORD,
   database          : process.env.DATABASE
 });
+
 
 exports.register = (req, res) => {
  
@@ -73,6 +68,7 @@ exports.register = (req, res) => {
 }
 
 
+
 exports.login = async (req, res) => {
   
   try {
@@ -121,6 +117,8 @@ exports.login = async (req, res) => {
   }
 }
 
+
+
 exports.isLoggedIn = async (req, res, next) => {
  
   if( req.cookies.jwt) {
@@ -136,21 +134,24 @@ exports.isLoggedIn = async (req, res, next) => {
         console.log(result);
 
         if(!result) {
+
           return next();
         }
 
         req.user = result[0];
-        console.log("user is")
         console.log(req.user);
+
         return next();
 
       }); 
     } 
     catch (err) {
+
       console.log(err);
       return next();
     }
   } else {
+
     next();
   }
 }
@@ -207,15 +208,14 @@ exports.upload = async (req, res) => {
 }
 
 
+exports.logout = async (req, res) => {
+  res.cookie('jwt', 'logout', {
+    expires: new Date(Date.now() + 2*1000),
+    httpOnly: true
+  });
 
-
-
-
-      
-      
-      
-      
-
+  res.status(200).redirect('/');
+}
 
 exports.view = async (req, res) => {
   res.render('/view');
@@ -233,14 +233,6 @@ exports.shared = async (req, res) => {
   res.render('/shared');
 }
 
-exports.logout = async (req, res) => {
-  res.cookie('jwt', 'logout', {
-    expires: new Date(Date.now() + 2*1000),
-    httpOnly: true
-  });
-
-  res.status(200).redirect('/');
-}
 
 
 

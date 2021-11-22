@@ -10,52 +10,15 @@ router.get('/', authController.isLoggedIn, (req, res) => {
   });
 });
 
+
 router.get('/register', (req, res) => {
   res.render('register');
 });
 
+
 router.get('/login', (req, res) => {
   res.render('login');
 });
-
-router.get('/profile', authController.isLoggedIn, (req, res) => {
-  console.log(req.user);
-  
-  if( req.user ) {
-    res.render('profile', {
-      user: req.user
-    });
-  } 
-  else {
-    res.redirect('/login');
-  } 
-});
-
-
-
-
-
-
-
-
-
-router.get('/upload', authController.isLoggedIn, (req, res) => {
-  console.log(req.user);
-  
-  if( req.user ) {
-    res.render('upload', {
-      user: req.user
-    });
-  } 
-  else {
-    res.redirect('/login');
-  } 
-
-});
-
-
-
-
 
 
 router.get('/view', authController.isLoggedIn, (req, res) => {
@@ -71,6 +34,35 @@ router.get('/view', authController.isLoggedIn, (req, res) => {
   } 
 });
 
+
+router.get('/profile', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('profile', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+
+router.get('/upload', authController.isLoggedIn, (req, res) => {
+  console.log(req.user);
+  
+  if( req.user ) {
+    res.render('upload', {
+      user: req.user
+    });
+  } 
+  else {
+    res.redirect('/login');
+  } 
+});
+
+
 router.get('/download', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
   
@@ -84,6 +76,7 @@ router.get('/download', authController.isLoggedIn, (req, res) => {
   } 
 });
 
+
 router.get('/delete', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
   
@@ -96,6 +89,7 @@ router.get('/delete', authController.isLoggedIn, (req, res) => {
     res.redirect('/login');
   } 
 });
+
 
 router.get('/shared', authController.isLoggedIn, (req, res) => {
   console.log(req.user);
